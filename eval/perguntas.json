@@ -1,0 +1,10 @@
+[
+  {"pergunta": "Como funciona o pagamento dividido entre duas formas?", "documento_esperado": "sistema-de-caixa.md"},
+  {"pergunta": "Quais abas tem a planilha gerada no fechamento do caixa?", "documento_esperado": "sistema-de-caixa.md"},
+  {"pergunta": "Quais atalhos de teclado existem no PDV?", "documento_esperado": "sistema-de-caixa.md"},
+  {"pergunta": "Como a busca de filmes evita uma requisição por tecla digitada?", "documento_esperado": "matchmovie.md"},
+  {"pergunta": "Como configurar a chave da API da TMDB?", "documento_esperado": "matchmovie.md"},
+  {"pergunta": "Quais níveis de acesso existem no sistema de segurança?", "documento_esperado": "wayne-security.md"},
+  {"pergunta": "Por que o total do pedido da confeitaria é recalculado no servidor?", "documento_esperado": "maison-rose.md"},
+  {"pergunta": "Qual extensão da linguagem foi escolhida no compilador?", "documento_esperado": "minilang.md"}
+]

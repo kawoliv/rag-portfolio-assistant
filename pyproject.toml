@@ -1,0 +1,9 @@
+[project]
+name = "rag-projetos"
+version = "1.0.0"
+description = "Assistente RAG que responde perguntas sobre documentação de projetos, com citação das fontes."
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

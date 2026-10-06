@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG de projetos</title>
+<style>
+  :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+  body { margin: 0; background: #0b0b0b; color: #e8e8e8; }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 20px; }
+  h1 { font-size: 1.6rem; margin: 0 0 6px; }
+  p.sub { color: #9a9a9a; margin: 0 0 28px; }
+  form { display: flex; gap: 8px; }
+  input { flex: 1; font: inherit; padding: 12px 14px; border-radius: 10px; border: 1px solid #333; background: #141414; color: inherit; }
+  button { font: inherit; font-weight: 600; padding: 0 20px; border-radius: 999px; border: 0; background: #fff; color: #000; cursor: pointer; }
+  button:disabled { opacity: .5; cursor: wait; }
+  .exemplos { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 32px; }
+  .exemplos button { background: transparent; color: #cfcfcf; border: 1px solid #333; font-weight: 400; font-size: .85rem; padding: 6px 12px; }
+  #resposta { white-space: pre-wrap; line-height: 1.6; }
+  .erro { color: #ffb4a8; }
+  .fonte { border: 1px solid #262626; border-radius: 10px; padding: 12px 14px; margin-top: 10px; font-size: .85rem; color: #b5b5b5; }
+  .fonte strong { color: #e2be6a; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Pergunte sobre os projetos</h1>
+  <p class="sub">As respostas vêm da documentação indexada e citam os trechos usados.</p>
+  <form id="f">
+    <input id="q" name="q" aria-label="Pergunta" placeholder="Ex.: Como funciona o fechamento do caixa?" required minlength="3" maxlength="500">
+    <button id="b" type="submit">Perguntar</button>
+  </form>
+  <div class="exemplos">
+    <button type="button">Como funciona o pagamento dividido no sistema de caixa?</button>
+    <button type="button">Como o MatchMovie evita uma requisição por tecla?</button>
+    <button type="button">Quais níveis de acesso existem no Wayne Security System?</button>
+  </div>
+  <div id="resposta" aria-live="polite"></div>
+  <div id="fontes"></div>
+</main>
+<script>
+  const form = document.getElementById('f'), q = document.getElementById('q'), b = document.getElementById('b');
+  const out = document.getElementById('resposta'), fontes = document.getElementById('fontes');
+  document.querySelectorAll('.exemplos button').forEach(el =>
+    el.addEventListener('click', () => { q.value = el.textContent; form.requestSubmit(); }));
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    b.disabled = true; out.className = ''; out.textContent = 'Buscando nos documentos…'; fontes.innerHTML = '';
+    try {
+      const r = await fetch('/perguntar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pergunta: q.value }) });
+      const dados = await r.json();
+      if (!r.ok) throw new Error(typeof dados.detail === 'string' ? dados.detail : 'Pergunta inválida.');
+      out.textContent = dados.resposta;
+      for (const f of dados.fontes) {
+        const div = document.createElement('div'); div.className = 'fonte';
+        const t = document.createElement('strong'); t.textContent = `[${f.n}] ${f.documento} — ${f.secao}`;
+        const p = document.createElement('div'); p.textContent = f.trecho.slice(0, 280) + (f.trecho.length > 280 ? '…' : '');
+        div.append(t, p); fontes.append(div);
+      }
+    } catch (err) {
+      out.className = 'erro'; out.textContent = err.message;
+    } finally { b.disabled = false; }
+  });
+</script>
+</body>
+</html>
